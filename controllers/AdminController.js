@@ -8,7 +8,7 @@ module.exports = {
         if(req.file.filename && req.body.title && req.body.name) {
             const newCourse = await CadCourse({
                 title: req.body.title,
-                name: req.body.name,
+                course: req.body.name,
                 img: req.file.filename,
                 status: req.body.status
             });
