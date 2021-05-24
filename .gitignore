@@ -1,3 +1,3 @@
 node_modules
-/public/images/avatar/
-/public/images/banner/
+/public/images/avatar/*
+/public/images/banner/*
