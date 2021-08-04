@@ -29,4 +29,6 @@ router.get('/video/:urlVideo/:urlLesson', UserController.watchVideo);
 
 router.post('/lesson/watched', Auth.AuthMiddleware, UserController.watchedLesson);
 
+router.get('/download/:archive', Auth.AuthMiddleware, UserController.downloadFile);
+
 module.exports = router;

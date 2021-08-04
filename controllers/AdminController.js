@@ -12,7 +12,7 @@ module.exports = {
                 img: req.file.filename,
                 status: req.body.status
             });
-
+            //corrigir alguns bugs restantes
             await newCourse.save();
 
             res.json({result: 'saved'});
@@ -90,11 +90,10 @@ module.exports = {
         
     },
     createLesson: async (req, res) => {
-        let nameFormated = req.body.course.replace('-', '');
-        let nameClean = nameFormated.replace(/[0-999]/g, '').trim();
+        let nameClean = req.body.course.split('-')[1].trim();
         
         const course = await Course.findOne({title: req.body.nameCourse.toLowerCase()});
-    
+        
         if(course) {
             const allModules = course.modules.filter(module => {  
                 return module.titleModule !== nameClean;
@@ -126,5 +125,75 @@ module.exports = {
 
         
         res.json({res: 'saved'});
+    },
+    addFileToLesson: async (req, res) => {
+        const course = await Course.findOne({title: req.body.course.toLowerCase()});
+    
+        if(course) {
+            const allModules = course.modules.filter(module => {  //pega todos os modulos
+                return module.titleModule !== req.body.module;
+            });
+
+            const module = course.modules.filter(module => {  //retira o modulo para editar
+               return module.titleModule === req.body.module; 
+            });
+            
+            const allLessons = [...module[0].lessons]; //copia as aulas do modulo
+
+            //pega as aulas sem a aula desejada
+            const AlllessonsToUpdate = allLessons.filter(lesson => {
+                return lesson.title !== req.body.lesson;
+            });
+
+            //pegar a aula que quero editar
+            const lesson = allLessons.filter(lesson => {
+                return lesson.title === req.body.lesson;
+            });
+
+            //adiciona o arquivo na aula desejada
+            lesson[0].file = req.file.filename;
+
+            //atualiza as aulas
+            const lessonsUpdated = [...AlllessonsToUpdate, {
+                title: lesson[0].title,
+                numberLessons: lesson[0].numberLessons,
+                url: lesson[0].url,
+                file: lesson[0].file,
+                watched: lesson[0].watched
+            }];
+            
+            //adiciona as aulas atualizadas no modulo
+            module[0].lessons = lessonsUpdated;
+            
+            const moduleUpdated = [...allModules, {
+                numberModule: module[0].numberModule,
+                titleModule: module[0].titleModule,
+                lessons: module[0].lessons //avisar que não aceitar caracteres especiais
+            }]; 
+            
+            await Course.findOneAndUpdate({title: req.body.course.toLowerCase()}, {$set: {modules: moduleUpdated}});
+            res.json({res: 'saved'});
+        }
+    },
+    getDataLesson: async (req, res) => {
+        const course = await Course.findOne({title: req.query.course});
+
+        if(course) {
+            const allModules = course.modules.filter(module => (
+                module.titleModule !== req.query.titleModule
+            ));
+
+            const module = course.modules.filter(module => (
+                module.titleModule === req.query.titleModule
+            ));
+
+            const allLessons = module[0].lessons;
+
+            const lesson = allLessons.filter(lesson => (
+                lesson.title === req.query.titleLesson
+            ))
+
+            res.json({modules: lesson[0]});
+        }
     }
 };

@@ -12,7 +12,11 @@ module.exports = {
             next();
         } 
 
-        if(!req.query.token && !req.body.token && !req.headers.authorization) {
+        if(req.params.token) {
+            next();
+        }
+
+        if(!req.query.token && !req.body.token && !req.headers.authorization && req.params.token) {
             res.json({notallowed: true});
             return;
         }

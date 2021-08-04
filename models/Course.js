@@ -14,6 +14,7 @@ const modelSchema = new mongoose.Schema({
             title: String,
             numberLessons: Number,
             url: String,
+            file: String,
             watched: [
                 {
                     id: String

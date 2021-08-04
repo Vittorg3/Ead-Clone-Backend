@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const remove = require('../services/removeAvatar');
 
 const pathDirectory = require('../public/videos/pathDirectory');
+const pathDirectoryFile = require('../public/files/pathDirectory');
 
 module.exports = {
     signin: async (req, res) => {
@@ -280,5 +281,13 @@ module.exports = {
 
             await Course.findOneAndUpdate({title: req.body.nameCourse}, {$set: {modules: modulesUpdated}});
         }
+    },
+    downloadFile: async (req, res) => {
+        var filePath = pathDirectoryFile.pathFile();
+        var filename = req.params.archive;
+
+        res.download(`${filePath}/${filename}`, filename);
+
+        //caminhoda pasta dos files/nome do arquivo, nome que o browser irá da
     }
 };

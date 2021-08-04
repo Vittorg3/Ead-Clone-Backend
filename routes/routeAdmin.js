@@ -9,6 +9,7 @@ const Auth = require('../middlewares/AuthMiddleware');
 
 const upload = require('../middlewares/UploadCourseImage');
 const UploadLesson = require('../middlewares/UploadLessonMiddleware');
+const UploadFile = require('../middlewares/UploadFileLessonMiddleware');
 
 router.get('/ping', (req, res) => {
     res.json({pong: true});
@@ -24,4 +25,7 @@ router.post('/course/module', Auth.AuthMiddleware, AdminController.createModule)
 
 router.post('/video/upload', Auth.AuthMiddleware, UploadLesson.single('lesson'), AdminController.createLesson);
 
+router.post('/file/lesson', Auth.AuthMiddleware, UploadFile.single('file'), AdminController.addFileToLesson);
+
+router.get('/data/lesson', Auth.AuthMiddleware, AdminController.getDataLesson);
 module.exports = router;
